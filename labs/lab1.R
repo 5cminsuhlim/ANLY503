@@ -21,6 +21,16 @@ ggplot(tips,
         geom_point()+
         ggthemes::theme_fivethirtyeight() #<<
 
+ggplot(tips, 
+       aes(tip, total_bill))+
+        geom_point()+
+        theme_minimal() #<<
+
+ggplot(tips, 
+       aes(tip, total_bill))+
+        geom_point()+
+        ggthemes::theme_tufte() #<<
+
 ggplot(tips, aes(tip, total_bill))+
         geom_point()+
         theme(
