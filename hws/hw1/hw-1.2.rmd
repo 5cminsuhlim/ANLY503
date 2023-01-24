@@ -1,0 +1,42 @@
+---
+title: "HW-1.2"
+output: pdf_document
+---
+
+Upload a completed version of this notebook to Canvas when done.
+
+See website for an overview, submission details, and more information on the data-set 
+
+* Put this folder into a R-project that has access to the `renv` environment 
+  * Alternatively, you can copy `renv` and `renv.lock` files into this folder
+  * If you are on Mac or Linux you can use a soft link `ln -s path_to_renv_folder/ren* ./`
+  
+## Set environment 
+```{r}
+renv::restore()
+
+library(tidyverse)
+library(rio)
+```
+
+
+## HW-1.2.1
+
+Re-create the following plot as closely as possible. 
+
+![](img/phd.png)
+
+```{r}
+# INSERT CODE HERE
+```
+
+## HW-1.2.1
+
+Re-create the following plot as closely as possible. 
+
+![](img/gapminder.png)
+
+
+```{r}
+# INSERT CODE HERE
+```
