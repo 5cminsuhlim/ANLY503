@@ -28,6 +28,50 @@ Re-create the following plot as closely as possible.
 
 ```{r}
 # INSERT CODE HERE
+library(ggplot2)
+
+df <- read.csv('./PhDPublications.csv')
+
+df$kids <- ifelse(df$kids > 0, "1+", "0")
+df$gender <- factor(df$gender, levels = c("female", "male"))
+df$gender <- reorder(df$gender, c("female", "male"))
+df$married <- factor(df$married, levels = c("yes", "no"))
+df$married <- reorder(df$married, c("yes", "no"))
+
+
+g = ggplot(df, aes(x=mentor, y=articles, color=kids)) +
+  geom_point(size=2) +
+  geom_smooth(method="loess", se=FALSE) +
+  facet_grid(married ~ gender) +
+  scale_y_continuous(limits=c(-1, 20), expand=c(0,0)) +
+  scale_x_continuous(limits=c(-3, 80), expand=c(0,0)) +
+  theme(panel.background = element_rect(fill='white'),
+        panel.grid.major = element_line(color='grey'),
+        panel.grid.minor = element_line(color='grey'),
+        panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+        strip.background = element_rect(fill='grey', color='black'),
+        text=element_text(size=10),
+        axis.text.y=element_text(),
+        axis.text.x=element_text(),
+        axis.ticks.y=element_line(color='black'),
+        axis.ticks.x=element_line(color='black'),
+        plot.title=element_text(size=10),
+        axis.title.x=element_text(size=10),
+        axis.title.y=element_text(size=10),
+        legend.title=element_text(size=10),
+        strip.text.x=element_text(size=10, label=c("Female", "Male")),
+        strip.text.y=element_text(size=10, angle=270, label=c("Married", "Unmarried")),
+        strip.placement = "right",
+        legend.key = element_rect(fill='white')) +
+  labs(x="", y="", color="Number of kids", shape="Number of kids") +
+  coord_fixed(ratio = 3)
+g = g + 
+  labs(x="Number of articles (mentor)", y="Number of articles (candidate)")
+
+g = g + 
+  scale_color_manual(values=c("darkblue", "yellow"), guide = guide_legend(override.aes = list(size=4)))
+
+g
 ```
 
 ## HW-1.2.1
@@ -39,4 +83,30 @@ Re-create the following plot as closely as possible.
 
 ```{r}
 # INSERT CODE HERE
+library(gapminder)
+
+data("gapminder")
+
+g <- ggplot(gapminder, aes(x=year, y=pop)) +
+  geom_line(aes(col=continent, group=country)) +
+  scale_color_manual(values = rep("black", 5), guide=FALSE) +
+  facet_wrap(~continent, ncol=3) +
+  scale_y_log10(labels = function(x) format(x, scientific = FALSE, big.mark = ",")) +
+  theme(panel.background = element_rect(fill='white'),
+        panel.grid.major = element_line(color='grey'),
+        panel.grid.minor = element_line(color='grey'),
+        panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+        axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 10),
+        axis.title.y = element_text(size = 10),
+        plot.title = element_text(size = 12),
+        strip.text = element_text(size = 10),
+        strip.background = element_rect(fill='grey', color='black'),
+        plot.margin = unit(c(0, 0, 0, 0), "mm")) +
+  labs(x = "Year", y = "Population", title = "Population change around the world, 1957-2007") +
+  xlim(1950, 2007) +
+  coord_fixed(ratio = 12)
+
+g
 ```
