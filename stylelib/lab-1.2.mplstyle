@@ -1,0 +1,10 @@
+ # write into the file
+axes.facecolor : F8F3F9
+axes.grid : True
+font.family : sans-serif
+font.size : 14
+grid.linestyle : --
+image.cmap : Accent
+lines.linewidth : 5
+xtick.labelsize : 14
+ytick.labelsize : 14
