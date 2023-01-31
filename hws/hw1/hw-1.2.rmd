@@ -1,6 +1,8 @@
 ---
 title: "HW-1.2"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 Upload a completed version of this notebook to Canvas when done.
@@ -26,11 +28,11 @@ Re-create the following plot as closely as possible.
 
 ![](img/phd.png)
 
-```{r}
+```{r, fig.width=12, fig.height=8}
 # INSERT CODE HERE
 library(ggplot2)
 
-df <- read.csv('./hws/hw1/PhDPublications.csv')
+df <- read.csv('PhDPublications.csv')
 
 # preprocessing
 df$kids <- ifelse(df$kids > 0, "1+", "0")
@@ -45,8 +47,7 @@ g <- ggplot(df, aes(mentor, articles, color = kids)) +
   scale_color_manual(values=c("darkblue", "yellow"), labels=c("0", "1+")) + # diff. color based on # of kids
   scale_x_continuous(limits = c(-6, 85), expand = c(0, 0)) + # axes limits
   scale_y_continuous(limits = c(-1, 18), expand = c(0, 0)) +
-  theme(aspect.ratio = 0.8,
-        axis.title.x = element_text(size=14), # axes titles
+  theme(axis.title.x = element_text(size=14), # axes titles
         axis.title.y = element_text(size=14),
         strip.text.x = element_text(size=14), # margin axes titles
         strip.text.y = element_text(size=14),
@@ -72,27 +73,27 @@ Re-create the following plot as closely as possible.
 ![](img/gapminder.png)
 
 
-```{r}
+```{r, fig.width=12, fig.height=8}
 # INSERT CODE HERE
 library(gapminder)
 
 data("gapminder")
 
 g <- ggplot(gapminder, aes(x=year, y=pop)) +
-  geom_line(aes(col=continent, group=country)) + # regression line
+  geom_line(aes(col=continent, group=country), lwd=0.7) + # regression line
   scale_color_manual(values = rep("black", 5), guide=FALSE) + # force all lines to be black
   facet_wrap(~continent, ncol=3) + # facet based on continent
   scale_y_log10(labels = function(x) format(x, scientific = FALSE, big.mark = ",")) + # make y axis log scale
   theme(panel.background = element_rect(fill='white'), # panel styling
         panel.grid.major = element_line(color='gray'),
         panel.grid.minor = element_line(color='gray90'),
-        panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+        panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
         axis.text.x = element_text(size = 10), # axes styling
         axis.text.y = element_text(size = 10),
         axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10),
         plot.title = element_text(size = 12),
-        strip.background = element_rect(fill='grey', color='black')) + # outer box around continents
+        strip.background = element_rect(fill='grey', color='black', linewidth = 1)) + # outer box around continents
   labs(x = "Year", y = "Population", title = "Population change around the world, 1957-2007") + # axes labels + title
   xlim(1950, 2007) + # x axis
   coord_fixed(ratio = 12)
