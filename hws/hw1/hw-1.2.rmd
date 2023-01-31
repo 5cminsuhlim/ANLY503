@@ -32,31 +32,35 @@ library(ggplot2)
 
 df <- read.csv('./hws/hw1/PhDPublications.csv')
 
+# preprocessing
 df$kids <- ifelse(df$kids > 0, "1+", "0")
-df$gender <- factor(df$gender, levels = c("female", "male"))
-df$gender <- reorder(df$gender, c("female", "male"))
-df$married <- factor(df$married, levels = c("yes", "no"))
-df$married <- reorder(df$married, c("yes", "no"))
+df$gender <- factor(df$gender, levels = c("female", "male"), labels=c("Female", "Male"))
+df$married <- factor(df$married, levels = c("yes", "no"), labels=c("Married", "Unmarried"))
 
 
 g <- ggplot(df, aes(mentor, articles, color = kids)) + 
-  geom_smooth(method = "loess") + 
-  facet_grid(married ~ gender, labeller = label_both, scales = "free_y", switch = "y") +
-  scale_color_manual(values=c("darkblue", "yellow"), labels=c("0", "1+")) +
-  scale_x_continuous(limits = c(0, 60), expand = c(0, 0)) +
-  scale_y_continuous(limits = c(0, 12.5), expand = c(0, 0)) +
-  theme(legend.position = "right",
-        axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        strip.text.x = element_text(size = 14),
-        strip.background = element_blank(),
-        plot.title = element_text(hjust = 0.37, size = 14),
-        plot.caption = element_text(hjust = -0.86, size = 10)) +
-  labs(color = "Number of kids",
-       caption = "Data from Long, J.S. (1990). Regression Models for Categorical and Limited Dependent Variables.") +
-  ggtitle("Relation between PhD candidate and mentor's publication number")
+  geom_point(size=2) + # scatterplot
+  geom_smooth(lwd=1.2, method = "loess", se = FALSE) + # regression line
+  facet_grid(married ~ gender, labeller = label_value) + # facet row = married, col = gender
+  scale_color_manual(values=c("darkblue", "yellow"), labels=c("0", "1+")) + # diff. color based on # of kids
+  scale_x_continuous(limits = c(-6, 85), expand = c(0, 0)) + # axes limits
+  scale_y_continuous(limits = c(-1, 18), expand = c(0, 0)) +
+  theme(aspect.ratio = 0.8,
+        axis.title.x = element_text(size=14), # axes titles
+        axis.title.y = element_text(size=14),
+        strip.text.x = element_text(size=14), # margin axes titles
+        strip.text.y = element_text(size=14),
+        strip.background = element_rect(fill='grey', color='black'),
+        legend.key = element_rect(fill='white'), # legend formatting
+        legend.title = element_text(size=14),
+        legend.position = "right",
+        panel.background = element_rect(fill='white'), # panel formatting
+        panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+        panel.grid.major = element_line(color='gray'),
+        panel.grid.minor = element_line(color='gray90')) +
+  labs(x="Number of articles (mentor)", # axes + legend labels
+       y="Number of articles (candidates)", 
+       color = "Number of kids")
 
 g
 ```
@@ -75,24 +79,22 @@ library(gapminder)
 data("gapminder")
 
 g <- ggplot(gapminder, aes(x=year, y=pop)) +
-  geom_line(aes(col=continent, group=country)) +
-  scale_color_manual(values = rep("black", 5), guide=FALSE) +
-  facet_wrap(~continent, ncol=3) +
-  scale_y_log10(labels = function(x) format(x, scientific = FALSE, big.mark = ",")) +
-  theme(panel.background = element_rect(fill='white'),
-        panel.grid.major = element_line(color='grey'),
-        panel.grid.minor = element_line(color='grey'),
+  geom_line(aes(col=continent, group=country)) + # regression line
+  scale_color_manual(values = rep("black", 5), guide=FALSE) + # force all lines to be black
+  facet_wrap(~continent, ncol=3) + # facet based on continent
+  scale_y_log10(labels = function(x) format(x, scientific = FALSE, big.mark = ",")) + # make y axis log scale
+  theme(panel.background = element_rect(fill='white'), # panel styling
+        panel.grid.major = element_line(color='gray'),
+        panel.grid.minor = element_line(color='gray90'),
         panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
-        axis.text.x = element_text(size = 10),
+        axis.text.x = element_text(size = 10), # axes styling
         axis.text.y = element_text(size = 10),
         axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10),
         plot.title = element_text(size = 12),
-        strip.text = element_text(size = 10),
-        strip.background = element_rect(fill='grey', color='black'),
-        plot.margin = unit(c(0, 0, 0, 0), "mm")) +
-  labs(x = "Year", y = "Population", title = "Population change around the world, 1957-2007") +
-  xlim(1950, 2007) +
+        strip.background = element_rect(fill='grey', color='black')) + # outer box around continents
+  labs(x = "Year", y = "Population", title = "Population change around the world, 1957-2007") + # axes labels + title
+  xlim(1950, 2007) + # x axis
   coord_fixed(ratio = 12)
 
 g
