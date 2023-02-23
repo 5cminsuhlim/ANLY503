@@ -1,0 +1,68 @@
+---
+title: 'Lab 2.2'
+author:
+  - name: Eric Lim
+contact:
+  - email: ml1859@georgetown.edu
+  - github: https://github.com/anly503/hw2-spring-2023-5cminsuhlim
+date: today
+format:
+  html:
+    toc: true
+    theme: default
+    code-fold: true
+    code-copy: true
+    code-line-numbers: true
+    number-sections: true
+    highlight-style: github
+    embed-resources: true
+    self-contained: true
+    preview-links: auto
+jupyter: python3
+---
+
+# Lab-2.2: Tableau
+
+**Instructions**
+
+* Read and work through all tutorial content on the `Tableau` page, under the `slides` tab, on the course website.
+* Also complete the following assignment below 
+  * [Click here](lab-2.2.zip) to download the notebook
+* The data for the assignment is in the file `mpg.xlsx` 
+  
+**Submission:**
+
+* You need to upload ONE document to Canvas when you are done
+  * (1) An HTML (or PDF) version of the completed form of this notebook 
+* All outputs must be visible in the uploaded version, including code-cell outputs, images, graphs, etc
+* i.e. replace the provided plots, with your plots, and then render to HTML.
+* The file should be "self contained", meaning no external dependencies are needed.
+
+### Lab-2.2.1: Create a worksheet
+
+* Re-create the following image generated using Tableau, do not use any other visualization tools.
+* The image should be more or less identical
+* However, **you must use a different color pallet** than shown in the provided image. 
+* To save the image, click the `Workspace` tab and select `Export --> image`
+
+![](./Sheet-1.png)
+
+### Lab-2.2.2: Create a dashboard
+
+* Re-create the following dashboard generated using Tableau, do not use any other visualization tools.
+* The image should be more or less identical
+* However, **you must use a different color pallet** than shown in the provided image. 
+* Notice that you need to create additional worksheets on top of the one from `lab-2.2.2` to create the dashboard
+* To save the image, click the `Dashboard` tab and select `Export image`
+
+![](./Dashboard-1.png)
+
+### Lab-2.2.3: Dashboard Filtering
+
+* Re-create the following dashboard generated using Tableau, do not use any other visualization tools. You can filter the previous dashboard to get this effect. 
+* The image should be more or less identical
+* However, **you must use a different color pallet** than shown in the provided image. 
+
+![](./Dashboard-2.png)
+![](./Dashboard-3.png)
+
