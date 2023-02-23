@@ -6,17 +6,17 @@
 <html lang = "en">
    <head>
       <meta charset = "UTF-8">
-      <script src="https://cdn.plot.ly/plotly-2.9.0.min.js"></script> <!-- importing js script -->
+      <script src="https://cdn.plot.ly/plotly-2.9.0.min.js"></script> <!-- importing js lib -->
    </head>
 
    <body>
  
    	<h2> PLOTLY.JS EXAMPLES: </h2> 
 
-		<form action="/action_page.php">
+		<form action="/action_page.php"> <!-- send form data -->
 		    <label for="method">CHOOSE PLOT TYPE:</label>
-		    <select name="method" id="method"> <!-- select options box -->
-		    <option value="plot-1">SCATTERPLOT-1</option>
+		    <select name="method" id="method"> <!-- select options box. id for option is method -->
+		    <option value="plot-1">SCATTERPLOT-1</option> <!-- list of options -->
 		    <option value="plot-2">SCATTERPLOT-2</option>
 
 		  </select>
@@ -24,7 +24,7 @@
 
 		  <br> 
 
-		<button onclick="render()">RENDER PLOT!</button>
+		<button onclick="render()">RENDER PLOT!</button> <!-- perform render() when button is clicked -->
 
 		<div id="myPlot" style="width:600px;height:400px;"></div>
 
@@ -33,7 +33,7 @@
 			function render() 
 			{
 
-			let method = document.getElementById("method").value;
+			let method = document.getElementById("method").value; // get value with id method from above
 
 
 			if(method=="plot-1")  
