@@ -18,7 +18,12 @@
 		    <select name="method" id="method"> <!-- select options box. id for option is method -->
 		    <option value="plot-1">SCATTERPLOT-1</option> <!-- list of options -->
 		    <option value="plot-2">SCATTERPLOT-2</option>
-
+			<!-- my plots -->
+			<option value="plot-3">LINEPLOT-1</option>
+			<option value="plot-4">LINEPLOT-2</option>
+			<option value="plot-5">LINEPLOT-3</option>
+			<option value="plot-6">BARPLOT-1</option>
+			<option value="plot-7">BARPLOT-2</option>
 		  </select>
 		</form>
 
@@ -33,43 +38,219 @@
 			function render() 
 			{
 
-			let method = document.getElementById("method").value; // get value with id method from above
+				let method = document.getElementById("method").value; // get value with id method from above
 
 
-			if(method=="plot-1")  
-			{
-	
-			  // Define Data
-		     let data = [{
-		             x:[1, 2, 3, 4, 5],
-		             y:[1, 2, 4, 8, 16],
-		             mode: "markers", //"lines"
-		             type: "scatter"
-		     }];
+				if(method=="plot-1"){
+					// Define Data
+					let data = [{
+							x:[1, 2, 3, 4, 5],
+							y:[1, 2, 4, 8, 16],
+							mode: "markers", //"lines"
+							type: "scatter"
+					}];
 
-				Plotly.newPlot("myPlot", data);
+					Plotly.newPlot("myPlot", data);
+				}
 
-			}
+				if(method=="plot-2"){
+					var xArray = [50,60,70,80,90,100,110,120,130,140,150];
+					var yArray = [7,8,8,9,9,9,10,11,14,14,15];
 
-			if(method=="plot-2")  
-			{
+					var data = [{
+							x:xArray,
+							y:yArray,
+							mode: "markers", //"lines"
+							type: "scatter"
+					}];
 
-		    var xArray = [50,60,70,80,90,100,110,120,130,140,150];
-		    var yArray = [7,8,8,9,9,9,10,11,14,14,15];
+					var layout = {
+						xaxis: {range: [40, 160], title: "Square Meters"},
+						yaxis: {range: [5, 16], title: "Price in Millions"},
+						title: "House Prices vs. Size"
+					};
+					Plotly.newPlot("myPlot", data, layout);
+				}
 
-		     var data = [{
-		             x:xArray,
-		             y:yArray,
-		             mode: "markers", //"lines"
-		             type: "scatter"
-		     }];
+				// MY PLOTS
+				
+				/* data from
+				 * https://www.google.com/search?q=average+monthly+temperatures&rlz=1C1CHBF_enUS863US863&oq=average+monthly+temperatures&aqs=chrome..69i57j0i402i512l2j0i512l7.14399j0j7&sourceid=chrome&ie=UTF-8
+				 */
+				if(method=="plot-3"){
+					var xArray = [
+						'Jan',
+						'Feb',
+						'Mar',
+						'Apr',
+						'May',
+						'Jun',
+						'Jul',
+						'Aug',
+						'Sep',
+						'Oct',
+						'Nov',
+						'Dec'
+					];
 
-		     var layout = {
-		       xaxis: {range: [40, 160], title: "Square Meters"},
-		       yaxis: {range: [5, 16], title: "Price in Millions"},
-		       title: "House Prices vs. Size"
-		     };
-		     Plotly.newPlot("myPlot", data, layout);
+					var yArray = [44, 48, 57, 69, 77, 85, 89, 87, 81, 69, 58, 48]
+					
+					var data = [{
+						x:xArray,
+						y:yArray,
+						mode: "lines", // smooth line over points
+						type: "scatter"
+					}];
+
+					var layout = {
+						xaxis: {title: "Months"},
+						yaxis: {range: [0, 100], title: "Average Temperature (F)"},
+						title: "Average Temperature Highs (F) in Arlington, VA"
+					};
+					Plotly.newPlot("myPlot", data, layout);
+				}
+
+				if(method=="plot-4"){
+					var xArray = [
+						'Jan',
+						'Feb',
+						'Mar',
+						'Apr',
+						'May',
+						'Jun',
+						'Jul',
+						'Aug',
+						'Sep',
+						'Oct',
+						'Nov',
+						'Dec'
+					];
+
+					var yArray = [24, 27, 34, 43, 53, 62, 67, 66, 59, 46, 36, 29]
+					
+					var data = [{
+						x:xArray,
+						y:yArray,
+						mode: "lines",
+						type: "scatter"
+					}];
+
+					var layout = {
+						xaxis: {title: "Months"},
+						yaxis: {range: [0, 100], title: "Average Temperature (F)"},
+						title: "Average Temperature Lows (F) in Arlington, VA"
+					};
+					Plotly.newPlot("myPlot", data, layout);
+				}
+				
+				/* data from
+				 * https://www-statista-com.proxy.library.georgetown.edu/statistics/184272/educational-attainment-of-college-diploma-or-higher-by-gender/
+				 */
+				if(method=="plot-5"){
+					var xArray = [1940, 1947, 1950, 1952, 1957, 1959, 1962, 1964, 1965, 1966, 1967, 1968, 1969, 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021];
+
+					var yArrayM = [5.50, 6.20, 7.30, 8.30, 9.60, 10.30, 11.40, 11.70, 12, 12.50, 12.80, 13.30, 13.60, 14.10, 14.60, 15.40, 16, 16.90, 17.60, 18.60, 19.20, 19.70, 20.40, 20.90, 21.10, 21.90, 23, 22.90, 23.10, 23.20, 23.60, 24, 24.50, 24.40, 24.30, 24.30, 24.80, 25.10, 26, 26, 26.20, 26.50, 27.50, 27.80, 28.20, 28.50, 28.90, 29.40, 28.90, 29.20, 29.50, 30.10, 30.10, 30.30, 30.80, 31.40, 32, 31.90, 32.30, 33.20, 33.70, 34.60, 35.40, 36.70, 36.60]
+					
+					var yArrayF = [3.80, 4.70, 5.20, 5.80, 5.80, 6, 6.70, 6.80, 7.10, 7.40, 7.60, 8, 8.10, 8.20, 8.50, 9, 9.60, 10.10, 10.60, 11.30, 12, 12.20, 12.90, 13.60, 13.40, 14, 15.10, 15.70, 16, 16.10, 16.50, 17, 18.10, 18.40, 18.80, 18.60, 19.20, 19.60, 20.20, 21.40, 21.70, 22.40, 23.10, 23.60, 24.30, 25.10, 25.70, 26.10, 26.50, 26.90, 28, 28.80, 29.10, 29.60, 30.10, 30.60, 31.40, 32, 32.70, 33.70, 34.60, 35.30, 36.60, 38.30, 39.10]
+
+					var data1 = {
+						x:xArray,
+						y:yArrayM,
+						mode: 'lines+markers', // show points and smooth line
+						name: 'Male',
+						marker: { // points styling
+							color: 'rgb(0, 0, 255)',
+							size: 4
+						},
+						line: { // line styling
+							color: 'rgb(0, 0, 255)',
+							width: 1
+						}
+					};
+
+					var data2 = {
+						x:xArray,
+						y:yArrayF,
+						mode: 'lines+markers',
+						name: 'Female',
+						marker: {
+							color: 'rgb(255, 0, 0)',
+							size: 4
+						},
+						line: {
+							color: 'rgb(255, 0, 0)',
+							width: 1
+						}
+					};
+
+					var data = [data1, data2] // combine both point + line plots into one data list
+
+					var layout = {
+						xaxis: {title: "Year"},
+						yaxis: {title: "% of U.S. Population w/ a College Degree"},
+						title: "% of U.S. Population w/ a College Degree by Sex"
+					};
+					Plotly.newPlot("myPlot", data, layout);
+				}
+
+				/* simulated using:
+				 * https://www.statcrunch.com/applets/type3&coins
+				 */
+				if(method=="plot-6"){
+					var xArray = ['Heads', 'Tails'];
+
+					var yArray = [2408, 2592]
+					
+					var data = [{
+						x:xArray,
+						y:yArray,
+						type: "bar"
+					}];
+
+					var layout = {
+						xaxis: {title: "Coin Toss Result"},
+						yaxis: {title: "Frequency"},
+						title: "Frequency of Heads or Tails from 5,000 Coin Flips"
+					};
+					Plotly.newPlot("myPlot", data, layout);
+				}
+
+				/* data from
+				 * https://www-statista-com.proxy.library.georgetown.edu/statistics/241605/death-rate-by-ethnic-group-and-sex-in-the-us/
+				 */
+				if(method=="plot-7"){
+					var xArray = ['All ethnic groups', 'Non-Hispanic White', 'Non-Hispanic Black', 'American Indian', 'Alaskan Native', 'Asian', 'Hispanic', 'Native Hawaiian', 'Two or more races'];
+
+					var yArrayM = [911.70, 1146.60, 921.80, 812.10, 398.70, 384.90, 646.50, 193.70]
+
+					var yArrayF = [829, 1068.10, 769.90, 673.30, 349.80, 315.70, 524.40, 161.30]
+					
+					var data1 = {
+						x:xArray,
+						y:yArrayM,
+						name: 'Male',
+						marker: {color: 'rgb(0, 0, 255)'},
+						type: 'bar'
+					}
+
+					var data2 = {
+						x:xArray,
+						y:yArrayF,
+						name: 'Female',
+						marker: {color: 'rgb(255, 0, 0)'},
+						type: 'bar'
+					}
+
+					var data = [data1, data2]
+
+					var layout = {
+						yaxis: {title: "Death rate per 100,000 of population"},
+						title: "Death rate in the United States in 2019 <br> by ethnic group and sex (per 100,000 of population)",
+						barmode: 'group', // grouped bar chart
+						bargap: 0.15, // gap b/w bars
+						bargroupgap: 0.1 // gap b/w groups
+					};
+					Plotly.newPlot("myPlot", data, layout);
 				}
 
 			}

@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <!-- IMPORT D3 -->
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+  </head>
+
+  <button onclick="setInterval(runD3, 50)">RUN D3!!</button>
+  <br>
+
+  <body>
+    <!-- INITIALIZE OBJECTS -->
+    <svg height="1000" width="1000">
+      <circle id="sun" cx="250" cy="250" r="50" stroke="black" stroke-width="3" fill="yellow" />
+
+      <circle id="venus" cx="150" cy="250" r="10" stroke="black" stroke-width="3" fill="darkgreen" />
+
+      <circle id="earth" cx="50" cy="250" r="20" stroke="black" stroke-width="3" fill="darkblue" />
+
+      <circle id="moon" cx="10" cy="250" r="5" stroke="black" stroke-width="3" fill="black" />
+    </svg>
+
+    <!-- JAVA SCRIPT -->
+    <script>
+      const T1 = 365; // earth
+      const T2 = 222; // venus
+      const T3 = 30; // moon
+
+      const R1 = 200; // earth
+      const R2 = 100; // venus
+      const R3 = 40; // moon
+      t = 0;
+
+      function delta_x(xc, yc, r, t, T) {
+        return xc + r * Math.cos(2 * 3.1415 * t / T);
+      }
+      function delta_y(xc, yc, r, t, T) {
+        return yc + r * Math.sin(2 * 3.1415 * t / T);
+      }
+
+      function runD3() {
+        // update earth
+        d3.selectAll("#earth")
+          .attr("cx", delta_x(250, 250, R1, t, T1))
+          .attr("cy", delta_y(250, 250, R1, t, T1));
+
+        // update venus
+        d3.selectAll("#venus")
+          .attr("cx", delta_x(250, 250, R2, t, T2))
+          .attr("cy", delta_y(250, 250, R2, t, T2));
+
+        // update moon relative to earth
+        const earthX = +d3.selectAll("#earth").attr("cx");
+        const earthY = +d3.selectAll("#earth").attr("cy");
+        d3.selectAll("#moon")
+          .attr("cx", delta_x(earthX, earthY, R3, t, T3))
+          .attr("cy", delta_y(earthX, earthY, R3, t, T3));
+
+        t++;
+      }
+    </script>
+
+  </body>
+</html>
