@@ -1,0 +1,196 @@
+---
+title: Student performance
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+runtime: shiny
+---
+
+```{css}
+    .chart-shim {
+      overflow: auto;
+    }
+```
+    
+```{r setup, include=FALSE}
+
+
+# includes
+library(gt)
+library(DT)
+library(glue)
+library(tidyr)
+library(ggthemes)
+library(tidyverse)
+library(flexdashboard)
+
+# do all data wrangling here
+source <- "https://raw.githubusercontent.com/anly503/datasets/main/student_points.csv"
+student_points <- read_csv(source)
+course <- "XU-789"
+
+avg_points <- student_points |>
+  group_by(assignment_type) |>
+  summarize(points=mean(round(100*(points/max_points_possible), 1), na.rm=TRUE))
+avg_points <- avg_points |> pivot_wider(names_from = assignment_type, values_from=points)
+```
+
+
+Summary
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Students {.value-box}
+
+```{r}
+# Add up the numbers of subs across each gw/beam
+renderValueBox({
+  valueBox(
+    value = length(unique(student_points$student_name)),
+    color = "primary"
+  )
+})
+```
+
+### Lab points (average)  {.value-box}
+
+```{r}
+
+renderValueBox({
+  
+  valueBox(
+    value = round(avg_points$lab, 1),
+    color = "primary"
+  )
+})
+```
+
+### Assignment points (average) {.value-box}
+
+```{r}
+renderValueBox({
+  
+  valueBox(
+    value = round(avg_points$homework, 1),
+    color = "primary"
+  )
+})
+
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Weekly performance {data-width=840}
+
+```{r}
+
+renderPlot(
+  student_points |>
+  mutate(points=100*(points/max_points_possible)) |>
+  group_by(assignment_type, assignment) |>
+  summarize(avg=mean(points, na.rm=TRUE), stddev=sd(points, na.rm=TRUE)) |>
+  mutate(week=str_sub(assignment,-2,-1)) |>
+  ggplot(aes(x=week, y=avg, fill=assignment_type)) + 
+  geom_bar(stat='identity') +
+  geom_errorbar( aes(x=week, ymin=avg-stddev, ymax=avg+stddev), width=0.2, color="darkgoldenrod", alpha=0.9, size=1.0) +
+  facet_wrap(~assignment_type, ncol=1) +
+  scale_y_continuous(breaks = seq(0,100,10)) +
+  theme_fivethirtyeight() +
+  scale_color_tableau() +
+  scale_fill_tableau() +
+  labs(title=glue("Week by week average scores of students in {course}"),
+       subtitle="Large standard deviation indicates a huge variation in student performance",
+       caption=glue("Data source: {source}")) +
+  theme(legend.position="none") +
+  theme(text = element_text(size=15)) +
+  theme(axis.title = element_text()) +
+  ylab("Normalized scores out of 100%") + xlab("Semester Week"))
+```
+
+### Student scores {data-width=300}
+
+```{r}
+render_gt(student_points |>
+  mutate(points=100*(points/max_points_possible)) |>
+  group_by(student_name, assignment_type) |>
+  summarize(points=round(mean(points, na.rm=TRUE), 1)) |>
+  pivot_wider(names_from = assignment_type, values_from=points) |>
+  ungroup() |>
+  mutate(homework_lab = (homework+lab/2)) |>
+  arrange(desc(homework_lab)) |>
+  select(-homework_lab) |>
+  gt() |>
+  cols_label(
+    student_name = "Student",
+    homework = "Homework points (%)",
+    lab = "Lab points (%)"
+  ) %>%
+  cols_align(
+  align = "left",
+  columns = everything()
+  ) %>%
+  #gt_highlight_rows(rows=instance_type == selected_instance_type, font_weight = "normal") %>%
+  tab_header(title="Student scores",
+             subtitle=md("Average normalized scores for homeworks and labs.")) %>%
+  tab_style(
+     locations = cells_column_labels(columns = everything()),
+     style     = list(
+       #Give a thick border below
+       cell_borders(sides = "bottom", weight = px(3)),
+       #Make text bold
+       cell_text(weight = "bold")
+     )
+   ) %>% 
+   #Apply different style to the title
+   tab_style(
+     locations = cells_title(groups = "title"),
+     style     = list(
+       cell_text(weight = "bold", size = 24)
+     )
+   ))
+```
+
+Data
+=======================================================================
+
+Inputs {.sidebar data-width=250}
+-----------------------------------------------------------------------
+
+### Select student
+
+```{r}
+selectInput("student",
+            "Student Name:",
+            selected="All students",
+            c("All students", student_points$student_name))
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Raw data
+```{r}
+renderDT({
+    if (input$student == "All students") {
+      data <- student_points
+    } else {
+      data <- student_points %>%
+        filter(student_name == input$student)
+      
+    }
+    
+    datatable(data,
+              extensions = 'Buttons',
+              options = list(dom="Blfrtip",
+                             buttons = c('copy', 'csv', 'excel', 'pdf'),
+                             lengthMenu = list(c(30, -1),
+                             c('30', 'All')), paging = T))
+  })
+```
+
+
