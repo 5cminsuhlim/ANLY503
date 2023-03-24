@@ -262,7 +262,7 @@ bar|line2&line1
 selection = alt.selection_single(fields=['hospital_name'], bind='legend')
 
 color2 = alt.condition(selection,
-                      alt.Color('hospital_name:N'),
+                      alt.Color('hospital_name:N', title='Hospital Name'),
 #                       alt.value('steelblue'),
                       alt.value('lightgray'))
 
