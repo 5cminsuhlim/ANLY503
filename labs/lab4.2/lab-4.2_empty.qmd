@@ -211,7 +211,7 @@ bar
 
 ```{python}
 color2 = alt.condition(selection,
-                      alt.Color('hospital_name:N'),
+                      alt.Color('hospital_name:N', title='Hospital Name'),
 #                       alt.value('steelblue'),
                       alt.value('lightgray'))
 
