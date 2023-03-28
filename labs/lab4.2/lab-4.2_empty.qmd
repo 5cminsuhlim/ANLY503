@@ -79,7 +79,8 @@ However, there is a way to do this. By enabling the `alt.data_transformers.enabl
 This means that the notebook **will not** have the data embedded, but it gives you the ability to use the Altair transformers instead of pre-aggregating the data in Pandas (which is the preferred method.)
 
 ```{python}
-alt.data_transformers.enable('json')
+#alt.data_transformers.enable('json')
+alt.data_transformers.enable('default',max_rows=None)
 ```
 
 ## Exploring the data
@@ -96,6 +97,8 @@ We will begin by looking at the average maximum wait time, across all hospitals,
         ,color=alt.Color('mean(max_wait):Q', scale=alt.Scale(scheme='orangered')))
 )
 ```
+
+### MODIFIED 1a
 
 ```{python}
 ## modified
@@ -132,6 +135,8 @@ df['wkday_name'] = pd.Categorical(df['wkday_name'], categories=wkday_order, orde
 )
 ```
 
+### MODIFIED 1b
+
 ```{python}
 ## modified
 (alt.Chart(df)
@@ -160,6 +165,8 @@ df['wkday_name'] = pd.Categorical(df['wkday_name'], categories=wkday_order, orde
         )
 )
 ```
+
+### MODIFIED 2
 
 ```{python}
 ## modified
@@ -229,8 +236,6 @@ line1.title ="Waiting Time for Hong Kong's Hospital"
 line1.encoding.x.title = 'Hour'
 line1.encoding.y.title = 'Average Waiting Time in Hour(s)'
 bar | line1
-
-
 ```
 
 ### Example 3c: the bar chart from 3a linked to a line chart showcasing the average wait time for the selected hospial by date
@@ -256,6 +261,8 @@ bar | line2
 ```{python}
 bar|line2&line1
 ```
+
+### MODIFIED 3d
 
 ```{python}
 ## modified
