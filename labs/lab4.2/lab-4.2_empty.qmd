@@ -139,6 +139,7 @@ df['wkday_name'] = pd.Categorical(df['wkday_name'], categories=wkday_order, orde
 
 ```{python}
 ## modified
+# use same updated df from 1a
 (alt.Chart(df)
  .mark_rect()
  .encode(x=alt.X('week:O', scale=alt.Scale(domain=week_order), sort=week_order, title='Week of the Year'),
@@ -170,18 +171,18 @@ df['wkday_name'] = pd.Categorical(df['wkday_name'], categories=wkday_order, orde
 
 ```{python}
 ## modified
-mod_df = df.groupby(pd.to_datetime(df['hospital_time'].dt.strftime('%Y-%m-%d')), as_index=False)['max_wait'].mean()
-mod_df['hospital_time'] = pd.to_datetime(df['hospital_time'].dt.strftime('%Y-%m-%d').unique())
+df.loc[df['hospital_name']=='Tin Shui Wai   (A&E service from 8:00am to 8:00pm)', 'hospital_name'] = 'Tin Shui Wai' # merge duplicate
 
-(alt.Chart(mod_df)
+(alt.Chart(df)
  .mark_rect()
  .encode(x=alt.X('yearmonthdate(hospital_time):O', title="Date"),
-         color=alt.Color('max_wait:Q',
+         y=alt.Y('hospital_name:N', title='Hospital Name'),
+         color=alt.Color('mean(max_wait):Q',
                          scale=alt.Scale(scheme='orangered'),
                          legend=alt.Legend(type='symbol'),
                          title="Average Wait Time"
                         ),
-         tooltip=['max_wait'],
+         tooltip=['mean(max_wait)','hospital_name:N'],
          
         )
 ).properties(title=alt.TitleParams('Average Hospital Wait Time for the Entire Period', anchor='middle', offset=10))
