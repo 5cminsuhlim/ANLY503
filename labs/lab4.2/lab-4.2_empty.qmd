@@ -116,7 +116,7 @@ df['wkday_name'] = pd.Categorical(df['wkday_name'], categories=wkday_order, orde
 
 (alt.Chart(df)
  .mark_rect()
- .encode(x=alt.X('week:O', sort=week_order, title='Week of the Year'),
+ .encode(x=alt.X('week:O', scale=alt.Scale(domain=week_order), sort=week_order, title='Week of the Year'),
          y=alt.Y('wkday_name:O', sort=wkday_order, title='Day of the Week'),
          color=alt.Color('mean(max_wait):Q', scale=alt.Scale(scheme='orangered'), title='Average Wait Time'))
 ).properties(title=alt.TitleParams('Heatmap of average wait time (across all hospitals) by week-of-the-year and day-of-the-week for the entire period', anchor='middle', offset=10))
@@ -141,7 +141,7 @@ df['wkday_name'] = pd.Categorical(df['wkday_name'], categories=wkday_order, orde
 ## modified
 (alt.Chart(df)
  .mark_rect()
- .encode(x=alt.X('week:O', sort=week_order, title='Week of the Year'),
+ .encode(x=alt.X('week:O', scale=alt.Scale(domain=week_order), sort=week_order, title='Week of the Year'),
          y=alt.Y('wkday_name:O', sort=wkday_order, title='Day of the Week'),
          color=alt.Color('mean(max_wait):Q', scale=alt.Scale(scheme='orangered'), title='Average Wait Time'))
 ).facet(
