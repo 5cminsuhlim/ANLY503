@@ -267,11 +267,30 @@ bar|line2&line1
 
 ```{python}
 ## modified
+# same "selection" variable across all three plots
 selection = alt.selection_single(fields=['hospital_name'], bind='legend')
+color = alt.condition(selection,
+                      alt.value('steelblue'),
+                      alt.value('lightgray'))
+
+bar=(alt.Chart(df)
+ .mark_bar()
+ .encode(y='mean(max_wait):Q',
+         x=alt.X('hospital_name:N',
+         sort=alt.EncodingSortField(field='max_wait', op='mean', 
+                            order='descending')),
+         color=color
+    
+        )
+).add_selection(selection)
+
+bar.title ="Mean Waiting Time for Hong Kong's Hospital"
+bar.encoding.x.title = 'Hospital'
+bar.encoding.y.title = 'Average Waiting Time in Hour(s)'
+
 
 color2 = alt.condition(selection,
                       alt.Color('hospital_name:N', title='Hospital Name'),
-#                       alt.value('steelblue'),
                       alt.value('lightgray'))
 
 line1=(alt.Chart(df)
@@ -279,7 +298,7 @@ line1=(alt.Chart(df)
  .encode(x=alt.X('hours(hospital_time):T'),
          y='mean(max_wait):Q',
          color=color2,
-         opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
+         opacity=alt.condition(selection, alt.value(1), alt.value(0.2)) # change opacity based on selection
         )
  .add_selection(selection)
 )
@@ -287,7 +306,17 @@ line1=(alt.Chart(df)
 line1.title ="Waiting Time for Hong Kong's Hospital"
 line1.encoding.x.title = 'Hour'
 line1.encoding.y.title = 'Average Waiting Time in Hour(s)'
-bar | line1
+
+line2=(alt.Chart(df)
+ .mark_line()
+ .encode(x=alt.X('yearmonthdate(hospital_time):T'),
+         y='mean(max_wait):Q'
+        )
+).transform_filter(selection) # transform plot shown based on selection
+
+line2.title ="Average Waiting Time in 1 Day for Hong Kong's Hospital"
+line2.encoding.x.title = 'Date'
+line2.encoding.y.title = 'Average Waiting Time in Hour(s)'
 
 bar|line2|line1
 ```
