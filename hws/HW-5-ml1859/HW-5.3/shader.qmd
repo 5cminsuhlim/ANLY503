@@ -1,0 +1,78 @@
+---
+title: "HW 5.2"
+author:
+  - name: Eric Lim
+contact:
+  - email: ml1859@georgetown.edu
+  - github: 'https://github.com/anly503/hw4-spring-2023-5cminsuhlim'
+date: today
+format:
+  html:
+    toc: true
+    theme: default
+    code-fold: true
+    code-copy: true
+    code-line-numbers: true
+    number-sections: true
+    highlight-style: github
+    embed-resources: true
+    self-contained: true
+    preview-links: auto
+execute: 
+  echo: true
+  message: false
+  warning: false
+jupyter: python3
+---
+
+# Imports
+
+```{python}
+import datashader as ds
+import hvplot.pandas
+import pandas as pd
+import numpy as np
+```
+
+# Data Transformation
+
+```{python}
+df = pd.read_csv('../../hw5_data/household_power_consumption.txt', sep=';')
+print(df.shape)
+print(df.dtypes)
+```
+
+## Convert Data Types
+
+```{python}
+df['DateTime'] = pd.to_datetime(df['Date'] + ' ' + df['Time']) # takes a LONG time
+df['Global_active_power'] = pd.to_numeric(df['Global_active_power'], errors='coerce')
+```
+
+## Handle Missing Values in Global Active Power column
+
+```{python}
+print("Before handling NaNs:", df['Global_active_power'].isna().sum())
+
+## Considering there are 2 million rows, dropping ~26000 rows with missing values doesn't seem unreasonable
+df = df[df['Global_active_power'].notna()]
+
+print("After handling NaNs:", df['Global_active_power'].isna().sum())
+```
+
+# Plotting
+
+```{python}
+#| eval: FALSE
+df.hvplot.scatter(x='DateTime', y='Global_active_power', groupby=[], color='blue', rasterize=True)
+```
+
+**Note:** The interpretation below assumes that energy consumption is measured in kWh since no documentation or units were provided.
+
+::: {#fig-scatter}
+
+![Energy Consumption from 2006 to 2010](./dshade.png)
+
+The plot above shows a scatterplot modified by Datashader of the energy usage of a single household from the end of 2006 to the end of 2010. The legend represents the number of points for each respective value of energy usage. There are two primary "darker blue" bands that are noticeable, one within between 0 kWh and 0.4 kWh, and the other between 1.2 kWh and 1.6 kWh, which suggests that the household, on average, consumes energy between the two ranges. Nonetheless, the household also sees spikes in energy, denoted by the lighter blue areas in the upper areas of the plot. There is a noticeable anomaly in August of 2008, where there is minimal energy usage (i.e. no energy usage greater than ~1 kWh).
+
+:::
