@@ -1,0 +1,113 @@
+---
+title: "LOLLIPOP Graph"
+format: html
+editor: visual
+---
+
+```{r ,echo=FALSE, message=FALSE, warning=FALSE}
+library(flipbookr)
+library(tidyverse)
+library(ggplot2)
+library(forecast)
+library(astsa) 
+library(xts)
+library(tseries)
+library(fpp2)
+library(fma)
+library(lubridate)
+library(tidyverse)
+library(TSstudio)
+library(quantmod)
+library(tidyquant)
+library(plotly)
+library(ggplot2)
+require(gridExtra)
+library(gganimate)
+options(dplyr.summarise.inform = FALSE)
+```
+
+AIRCARFT DATA
+
+```{r warning=FALSE, message=FALSE}
+library(plotly)
+df <- read.csv("../data/airplanes_final.csv")
+df$Date<-as.Date(df$Date,"%m/%d/%Y")
+df <- df %>%
+  filter(year(Date) >= 1962 & year(Date) <= 1990)
+df <- df %>%
+  separate(Location, c("City", "State"), sep = ",\\s*", remove = FALSE)
+# Create time series of yearly state counts
+state_count <- df %>%
+  mutate(year = year(Date)) %>% # Extract year from Date column
+  group_by(year) %>%
+  summarize(count = n_distinct(State)) # Count number of unique states for each ye # Convert to time series object
+state_counts <- state_count %>% mutate(day = "01",month = "01")
+state_counts$Date<-as.Date(with(state_counts,paste(year,month,day,sep="-")),"%Y-%m-%d")
+data = data.frame(Date = state_counts$Date, Values = state_counts$count)
+
+state_counts_df <- as.data.frame(state_count)
+state_counts_df$rolling_avg <- rollmean(state_counts_df$count, k = 5, align = "right", fill = NA)
+
+t <- list(
+  family = "sans serif",
+  size = 16)
+# Create an interactive time series plot using plotly
+p <- plot_ly(state_counts_df, x = ~year, y = ~count, type = "scatter", mode = "lines",
+              line = list(color = "#21abcd")) %>%
+  layout(title = list(text='Aircraft Accidents (1962 -1990)', y = 0.95, x = 0.5, xanchor = 'center', yanchor =  'top'), font=t,
+         xaxis = list(title = "Year"), yaxis = list(title = "Number of Accidents"),xaxis = list(tickfont = list(size = 15)), 
+        yaxis = list(tickfont = list(size = 5)))
+
+# Display the plot
+p
+
+# Group the data by operator and count the number of crashes
+type_crashes <- aggregate(Date ~ Operator, data = df, FUN = length)
+colnames(type_crashes) <- c('Operator', 'count')
+
+# Sort the data by count in descending order
+type_crashes <- type_crashes[order(type_crashes$count, decreasing = TRUE), ]
+
+# Get the top 10 aircraft types with the most flight crashes
+top_10_types <- type_crashes[1:10, ]
+
+# Add a new column for transition
+top_10_types <- top_10_types %>%
+  arrange(count) %>%    # First sort by count
+  mutate(name=factor(Operator, levels=Operator)) %>%   # Update the factor levels
+  mutate(order = 1:n())  # Add a new column for transition
+
+
+htmlwidgets::saveWidget(
+                widget = p, #the plotly object
+                file = "../img/lollipop/aircraft_1060_1990_timeseries.html", #the path & file name
+                selfcontained = TRUE #creates a single html file
+                )
+```
+
+```{r }
+
+
+p2<- ggplot(top_10_types, aes(x=name, y=count)) +
+  geom_segment(aes(xend=name, yend=0), color="#9e99a6") +
+  geom_point(size=7.5, color="#21abcd") +
+  geom_text(aes(label=count), color="white", size=3) +
+  coord_flip() +
+  theme_bw() +
+  ylab("Number of Crashes") +
+  xlab("") +
+  ggtitle("Top 10 Aircraft Types with Most Flight Crashes")
+
+# Convert ggplot to plotly
+p2 <- ggplotly(p2)
+
+# Display the plot
+p2
+
+htmlwidgets::saveWidget(
+                widget = p2, #the plotly object
+                file = "../img/lollipop/top_10_aircrafts.html", #the path & file name
+                selfcontained = TRUE #creates a single html file
+                )
+
+```

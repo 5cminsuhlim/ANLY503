@@ -1,0 +1,197 @@
+---
+title: "line Graph"
+format: html
+editor: visual
+---
+
+```{r ,echo=FALSE, message=FALSE, warning=FALSE}
+library(flipbookr)
+library(tidyverse)
+library(ggplot2)
+library(forecast)
+library(astsa) 
+library(xts)
+library(tseries)
+library(fpp2)
+library(fma)
+library(lubridate)
+library(tidyverse)
+library(TSstudio)
+library(quantmod)
+library(tidyquant)
+library(plotly)
+library(ggplot2)
+require(gridExtra)
+library(gganimate)
+options(dplyr.summarise.inform = FALSE)
+```
+
+# read data
+
+```{r}
+library(plotly)
+df <- read.csv("../data/train_final.csv")
+
+df$DATE<-as.Date(df$DATE,"%m/%d/%Y")
+#montly data
+state_count <- df %>%
+  mutate(month = month(DATE), year = year(DATE)) %>% # Extract year from Date column
+  group_by(year,month) %>%
+  summarize(count = n_distinct(STATE))
+
+mean_data_s <- state_count %>% mutate(day = "01")
+mean_data_s$Date<-as.Date(with(mean_data_s,paste(year,month,day,sep="-")),"%Y-%m-%d")
+data = data.frame(Date = mean_data_s$Date, Values = mean_data_s$count)
+# add smoothing column
+data$SmoothedValues <- rollmean(data$Values, k = 45, align = "right", fill = NA)
+
+```
+
+INTERACTIVE TRAIN TIME SERIES
+
+```{r fig.height = 4, warning=FALSE, message=FALSE}
+t <- list(
+  family = "sans serif",
+  size = 16)
+# Create an interactive time series plot using plotly
+p <- plot_ly(data, x = ~Date, y = ~Values, type = "scatter", mode = "lines",
+              line = list(color = "green")) %>%
+  layout(title = list(text='Train Accidents(1957 -2022)', y = 0.95, x = 0.5, xanchor = 'center', yanchor =  'top'), font=t,
+         xaxis = list(title = "Year"), yaxis = list(title = "Number of Accidents"),xaxis = list(tickfont = list(size = 15)), 
+        yaxis = list(tickfont = list(size = 10)))
+
+
+# Display the plot
+p
+
+htmlwidgets::saveWidget(
+                widget = p, #the plotly object
+                file = "../img/timeseries/train_accidedents_timeseries.html", #the path & file name
+                selfcontained = TRUE #creates a single html file
+                )
+```
+
+ANIMATED TRAIN TIME SERIES
+
+```{r warning=FALSE, message=FALSE}
+library(gganimate)
+library(ggthemes)
+library(gifski)
+library("scales")
+
+plot<-data%>%
+  ggplot(aes(x=Date,y=Values))+
+  geom_path()+
+  geom_line(alpha=0.8, color = "#93c572")+
+  geom_line(aes(y = SmoothedValues), color = "#ff7f50") + # Add smoothing line
+  theme_bw()+
+  labs(title="USA TRAIN ACCIDENTS 1957-2022",
+       caption="Source: Federal Railroad Admistration",
+       x = "Year",
+       y = "Number of Accidents")+
+  theme(text=element_text(colour="black",size=12),
+        title=element_text(colour="black",size=12,face = "bold"),
+        plot.title=element_text(hjust=0.5),
+        axis.title.x = element_text(margin = margin(t = 30),size=12),
+        panel.grid.minor.x=element_blank(),
+        legend.background = element_blank(),
+        legend.key= element_blank(),
+        legend.position=c(0.095, 0.81), ## legend at top-left, inside the plot
+        plot.margin = unit(c(0.5,1.3,0.5,0.5), "cm"))+ 
+  scale_x_date(date_labels = "%Y",date_breaks ="5 year")
+
+plot.animation=plot+
+  transition_reveal(Date)+
+  view_follow(fixed_y=T)
+
+# Animate the plot
+animate(plot.animation, height=420,duration = 10,width=700,fps=30,rewind=F,renderer = gifski_renderer(loop=TRUE))
+anim_save("../img/timeseries/train_accidents_timeseries.gif", overwrite = TRUE)
+```
+
+AIRCARFT DATA
+
+```{r warning=FALSE, message=FALSE}
+library(plotly)
+df <- read.csv("../data/airplanes_final.csv")
+
+df <- df %>%
+  separate(Location, c("City", "State"), sep = ",\\s*", remove = FALSE)
+
+df$Date<-as.Date(df$Date,"%m/%d/%Y")
+# Create time series of yearly state counts
+state_count <- df %>%
+  mutate(year = year(Date)) %>% # Extract year from Date column
+  group_by(year) %>%
+  summarize(count = n_distinct(State)) # Count number of unique states for each ye # Convert to time series object
+state_counts <- state_count %>% mutate(day = "01",month = "01")
+state_counts$Date<-as.Date(with(state_counts,paste(year,month,day,sep="-")),"%Y-%m-%d")
+data = data.frame(Date = state_counts$Date, Values = state_counts$count)
+# add smoothing column
+data$SmoothedValues <- rollmean(data$Values, k = 10, align = "right", fill = NA)
+
+```
+
+INTERACTIVE AIRCRAFT TIME SERIES
+
+```{r fig. height = 5, warning=FALSE, message=FALSE}
+state_counts_df <- as.data.frame(state_count)
+
+t <- list(
+  family = "sans serif",
+  size = 16)
+# Create an interactive time series plot using plotly
+p <- plot_ly(state_counts_df, x = ~year, y = ~count, type = "scatter", mode = "lines",
+              line = list(color = "darkblue")) %>%
+  layout(title = list(text='Aircraft Accidents (1908 -2022)', y = 0.95, x = 0.5, xanchor = 'center', yanchor =  'top'), font=t,
+         xaxis = list(title = "Year"), yaxis = list(title = "Number of Accidents"),xaxis = list(tickfont = list(size = 15)), 
+        yaxis = list(tickfont = list(size = 5)))
+
+# Display the plot
+p
+
+htmlwidgets::saveWidget(
+                widget = p, #the plotly object
+                file = "../img/timeseries/aircraft_accidedents_timeseries.html", #the path & file name
+                selfcontained = TRUE #creates a single html file
+                )
+```
+
+ANIMATED AIRCRAFT TIME SERIES
+
+```{r warning=FALSE, message=FALSE}
+library(gganimate)
+library(ggthemes)
+library(gifski)
+library("scales")
+plot<-data%>%
+  ggplot(aes(x=Date,y=Values))+
+  geom_path()+
+  geom_line(alpha=0.8, color = "#b0e0e6")+
+  geom_line(aes(y = SmoothedValues), color = "red") +
+  theme_bw()+
+  labs(title="USA AIRCRAFT CRASHES 1908-2009",
+       caption="Source: Kaggle",
+       x = "Year",
+       y = "Number of Accidents")+
+  theme(text=element_text(colour="black",size=12),
+        title=element_text(colour="black",size=12,face = "bold"),
+        plot.title=element_text(hjust=0.5),
+        axis.title.x = element_text(margin = margin(t = 30),size=12),
+        panel.grid.minor.x=element_blank(),
+        legend.background = element_blank(),
+        legend.key= element_blank(),
+        legend.position=c(0.095, 0.81), ## legend at top-left, inside the plot
+        plot.margin = unit(c(0.5,1.3,0.5,0.5), "cm"))+ 
+  scale_x_date(date_labels = "%Y",date_breaks ="10 year")
+
+plot.animation=plot+
+  transition_reveal(Date)+
+  view_follow(fixed_y=T)
+
+
+# Animate the plot
+animate(plot.animation, height=420,duration = 10,width=700,fps=30,rewind=F,renderer = gifski_renderer(loop=TRUE))
+anim_save("../img/timeseries/aircraft_accidents_timeseries.gif", overwrite = TRUE)
+
+```

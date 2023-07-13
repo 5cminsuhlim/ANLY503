@@ -1,0 +1,89 @@
+---
+title: "sunburst"
+format: html
+editor: visual
+---
+
+```{r ,echo=FALSE, message=FALSE, warning=FALSE}
+library(flipbookr)
+library(tidyverse)
+library(ggplot2)
+library(forecast)
+library(astsa) 
+library(xts)
+library(tseries)
+library(fpp2)
+library(fma)
+library(lubridate)
+library(tidyverse)
+library(TSstudio)
+library(quantmod)
+library(tidyquant)
+library(plotly)
+library(ggplot2)
+require(gridExtra)
+library(gganimate)
+library(sunburstR)
+options(dplyr.summarise.inform = FALSE)
+```
+
+# read data
+
+```{r fig.height=1, fig.width=1}
+df <- read.csv("../data/train_final.csv")
+
+
+df$DATE<-as.Date(df$DATE,"%m/%d/%Y")
+data = data.frame(Date = df$DATE,State = df$STATE, Damage = df$ACCDMG)
+
+damage_data <- data%>%
+  group_by(State) %>%
+  summarize(damage = sum(Damage))
+
+damage_data <- damage_data %>% 
+  mutate(region = case_when(
+    State %in% c("CT", "DC", "DE", "ME", "MD", "MA", "NH", "NJ", "NY", "PA", "RI", "VT") ~ "Northeast",
+    State %in% c("IL", "IN", "IA", "KS", "MI", "MN", "MO", "NE", "ND", "OH", "SD", "WI") ~ "Midwest",
+    State %in% c("AL", "AR", "FL", "GA", "KY", "LA", "MS", "NC", "OK", "SC", "TN", "TX", "VA", "WV") ~ "South",
+    State %in% c("AZ", "CA", "CO", "HI", "ID", "MT", "NV", "NM", "OR", "UT", "WA", "WY") ~ "West",
+    State %in% c("AK") ~ "Pacific",
+    TRUE ~ "Other"
+  ))
+
+damage_data <- data.frame(region = damage_data$region, state = damage_data$State, damage =  damage_data$damage)
+damage_data$region_state <- paste(damage_data$region, damage_data$state, sep = "-")
+data <- data.frame(sequence = damage_data$region_state, damage =  damage_data$damage)
+
+
+sn = sunburst(
+  data,
+  withD3 = TRUE,
+  colors = c("#40826D", "#40B5AD","#9FE2BF", "#009E60","#A7D2CB","#93C572","#C1E1C1","#ECFFDC","#4CBB17"),
+  count = TRUE, # add count just for demonstration
+  width = 600, height = 600,
+  legendOrder = unique(unlist(strsplit(as.character(data$V1), "-")))
+)
+
+# add title and source information with custom font size and style
+sn <- htmlwidgets::prependContent(sn, 
+                                  htmltools::h3("Damage Cause by Train Accidents 1957-2022", 
+                                                style = "font-size: 20px;font-family: Arial; font-weight: bold; text-align: left;"),
+                                  htmltools::h4("Source: Federal Railroad Administration", 
+                                                style = "font-size: 16px;font-family: Arial; font-style: italic; text-align: left;")
+)
+
+# display sunburst plot
+sn
+
+
+
+
+
+
+htmlwidgets::saveWidget(
+                widget = sn,
+                file = "../img/sunburst/train_damages.html", #the path & file name
+                selfcontained = TRUE
+                )
+
+```
